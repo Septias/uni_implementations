@@ -59,7 +59,7 @@ pub fn solve_lda<T, const X_WIDTH: usize, const X_HEIGHT: usize, const Y_HEIGHT:
     // J(w) = \frac{(m2 - m1)^2}{s_1^2 + s_2^2}
     // w = S^(-1)_W(m2 - m1)
     let w = s_w.try_inverse().unwrap() * (m2 - m1).transpose();
-    let b: f32 = (-0.5 * (w * (m1 + m2)))[0];
+    let b = (-0.5 * w.transpose() * (m1 + m2).transpose())[0];
     (b, w)
 }
 
@@ -101,5 +101,6 @@ mod tests {
         .into();
 
         let b = solve_lda(x, y);
+        assert_eq!(b , (-42.2037201, [-0.216408253, 1.36400926].into()));
     }
 }
