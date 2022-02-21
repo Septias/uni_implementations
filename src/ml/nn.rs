@@ -4,9 +4,7 @@ use assert_approx_eq::assert_approx_eq;
 use nalgebra::{DMatrix, Matrix, Matrix2, SMatrix, SVector, Vector, Vector2};
 use std::f32::consts::E;
 
-fn vec2(x: f32, y: f32) -> Vector2<f32> {
-    [x, y].into()
-}
+use crate::vec2;
 
 struct Layer<const INPUT: usize, const NODES: usize> {
     values: SVector<f32, NODES>,

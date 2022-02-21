@@ -73,6 +73,8 @@ enum Logo {
 mod tests {
     use std::iter::once;
 
+    use crate::vec2;
+
     use super::*;
 
     #[test]
@@ -102,5 +104,6 @@ mod tests {
 
         let b = solve_lda(x, y);
         assert_eq!(b , (-42.2037201, [-0.216408253, 1.36400926].into()));
+        assert_eq!((b.1.transpose() * vec2(6., 25.))[0] + b.0, -9.401939);
     }
 }
