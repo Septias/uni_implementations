@@ -9,3 +9,4 @@ yew = "0.19"
 plotters = "*"
 web-sys = { version = "*", features = ["HtmlCanvasElement"] }
 plotters-canvas = "^0.3.*"
+nalgebra = "*"
