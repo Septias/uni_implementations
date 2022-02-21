@@ -3,10 +3,10 @@ use itertools::Itertools;
 use nalgebra::{Matrix2, RowSVector, SMatrix, SVector, Vector};
 use std::{fmt::Debug, hash::Hash};
 
-pub fn solve_lda<const X_WIDTH: usize, const X_HEIGHT: usize, const Y_HEIGHT: usize, T>(
+pub fn solve_lda<T, const X_WIDTH: usize, const X_HEIGHT: usize, const Y_HEIGHT: usize>(
     x: SMatrix<f32, X_HEIGHT, X_WIDTH>,
     y: SVector<T, Y_HEIGHT>,
-) -> (f32, RowSVector<f32, X_WIDTH>) where
+) -> (f32, SVector<f32, X_WIDTH>) where
     T: Eq + Hash + Debug,
 {
     // calculate the mean of the classes
@@ -27,7 +27,7 @@ pub fn solve_lda<const X_WIDTH: usize, const X_HEIGHT: usize, const Y_HEIGHT: us
             c_1 += 1.;
         } else {
             m2 += row;
-            c_1 += 1.;
+            c_2 += 1.;
         }
     }
 
@@ -42,9 +42,9 @@ pub fn solve_lda<const X_WIDTH: usize, const X_HEIGHT: usize, const Y_HEIGHT: us
 
     for (i, row) in x.row_iter().enumerate() {
         if y[i] == *unique[0] {
-            sk1 += (row - m1) * (row - m1).transpose();
+            sk1 += (row - m1).transpose() * (row - m1);
         } else {
-            sk2 += (row - m2) * (row - m2).transpose();
+            sk2 += (row - m2).transpose() * (row - m2);
         }
     }
 
@@ -58,8 +58,8 @@ pub fn solve_lda<const X_WIDTH: usize, const X_HEIGHT: usize, const Y_HEIGHT: us
     // calculate the w
     // J(w) = \frac{(m2 - m1)^2}{s_1^2 + s_2^2}
     // w = S^(-1)_W(m2 - m1)
-    let w: RowSVector<f32, X_WIDTH> = s_w.try_inverse().unwrap() * (m2 - m1);
-    let b: f32 = (-0.5 * (w * (m1 + m2).transpose()))[0];
+    let w = s_w.try_inverse().unwrap() * (m2 - m1).transpose();
+    let b: f32 = (-0.5 * (w * (m1 + m2)))[0];
     (b, w)
 }
 
@@ -79,7 +79,7 @@ mod tests {
     fn test_lda() {
         let x = SMatrix::<f32, 12, 2>::from_columns(&[
             [4.9, 4.7, 4.5, 5.8, 4.9, 4., 5., 8.2, 8.7, 6.9, 7.2, 9.].into(),
-            [10, 15, 12, 25, 10, 15, 43, 35, 50, 55, 52, 51]
+            [10, 15, 12, 25, 10, 15, 43, 45, 50, 55, 52, 51]
                 .map(|x| x as f32)
                 .into(),
         ]);
