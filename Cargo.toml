@@ -12,3 +12,4 @@ plotters-canvas = "^0.3.*"
 nalgebra = {version="*", features = ["rand"]}
 rand = {version="*"}
 assert_approx_eq = "1.1.0"
+itertools = "*"
