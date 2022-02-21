@@ -14,14 +14,14 @@ pub fn app() -> Html {
     let reference = use_state(|| NodeRef::default()).deref().clone();
     let reference_clone = reference.clone();
     let reference_clone2 = reference.clone();
-    
+
     {
-        use_effect( move || {
+        use_effect(move || {
             let canvas = reference_clone.cast::<HtmlCanvasElement>().unwrap();
             canvas.set_width(1200);
             canvas.set_height(600);
             redraw(&reference_clone);
-            ||()
+            || ()
         });
     }
 

@@ -1,7 +1,7 @@
 #![allow(unused)]
 
 use crate::DrawResult;
-use nalgebra::{Vector3, Vector2};
+use nalgebra::{Vector2, Vector3};
 use plotters::prelude::*;
 use plotters_canvas::CanvasBackend;
 use web_sys::HtmlCanvasElement;
@@ -25,7 +25,7 @@ pub fn draw(canvas: HtmlCanvasElement) -> DrawResult<()> {
     chart.draw_series(LineSeries::new(
         (0..=1000)
             .map(|x| x as f32 / 100.0)
-            .map(|x| (x, 2.7_f32.powf(x*0.2))),
+            .map(|x| (x, 2.7_f32.powf(x * 0.2))),
         &RED,
     ))?;
 
@@ -44,13 +44,15 @@ struct GaussNewton<const N: usize> {
 }
 
 impl<const N: usize> GaussNewton<N> {
-    fn new(points: [Vector2<f32>; N]) -> Self { 
-        Self {points, parameters: [0.0, 0.0].into()} 
+    fn new(points: [Vector2<f32>; N]) -> Self {
+        Self {
+            points,
+            parameters: [0.0, 0.0].into(),
+        }
     }
-    
+
     fn step() {
         let residuals = (0..N).map(|n| {});
         //let jacobian = [];
     }
 }
-

@@ -9,4 +9,6 @@ yew = "0.19"
 plotters = "*"
 web-sys = { version = "*", features = ["HtmlCanvasElement"] }
 plotters-canvas = "^0.3.*"
-nalgebra = "*"
+nalgebra = {version="*", features = ["rand"]}
+rand = {version="*"}
+assert_approx_eq = "1.1.0"
