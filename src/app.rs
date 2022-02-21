@@ -1,5 +1,5 @@
 use std::ops::Deref;
-use test_project::functions::residuals;
+use test_project::optimierung::residuals;
 use web_sys::HtmlCanvasElement;
 use yew::prelude::*;
 

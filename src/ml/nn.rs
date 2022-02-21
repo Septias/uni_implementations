@@ -4,6 +4,12 @@ use assert_approx_eq::assert_approx_eq;
 use nalgebra::{DMatrix, Matrix, SMatrix, SVector, Vector, Vector2, Matrix2};
 use std::f32::consts::E;
 
+
+fn vec2(x: f32, y: f32) -> Vector2<f32> {
+    [x, y].into()
+}
+
+
 struct Layer<const INPUT: usize, const NODES: usize> {
     values: SVector<f32, NODES>,
     weights: SMatrix<f32, NODES, INPUT>,
@@ -53,10 +59,6 @@ struct NN {
     layers: (Layer<1, 2>, Layer<2, 2>, Layer<2, 1>),
 }
 
-fn vec2(x: f32, y: f32) -> Vector2<f32> {
-    [x, y].into()
-}
-
 impl NN {
     fn new() -> Self {
         Self {
@@ -70,12 +72,13 @@ impl NN {
 
     fn forward(&mut self, input: SVector<f32, 1>) -> f32 {
         //let neural_values = [];
-
         self.layers.0.forward(&input);
         self.layers.1.forward(self.layers.0.values());
         self.layers.2.forward(self.layers.1.values());
         self.layers.2.values()[0]
     }
+
+
 }
 
 fn relu(x: &f32) -> f32 {

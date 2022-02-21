@@ -1,4 +1,4 @@
-pub mod functions;
+pub mod optimierung;
 pub mod ml;
 
 /// Type alias for the result of a drawing function.
