@@ -2,9 +2,9 @@ use itertools::Itertools;
 use nalgebra::{RowSVector, SMatrix, SVector};
 use std::{fmt::Debug, hash::Hash};
 
-pub fn solve_lda<T, const X_WIDTH: usize, const X_HEIGHT: usize, const Y_HEIGHT: usize>(
+pub fn solve_lda<T, const X_WIDTH: usize, const X_HEIGHT: usize>(
     x: SMatrix<f32, X_HEIGHT, X_WIDTH>,
-    y: SVector<T, Y_HEIGHT>,
+    y: SVector<T, X_HEIGHT>,
 ) -> (f32, SVector<f32, X_WIDTH>) where
     T: Eq + Hash + Debug,
 {
