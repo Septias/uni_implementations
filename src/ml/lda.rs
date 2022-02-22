@@ -5,7 +5,8 @@ use std::{fmt::Debug, hash::Hash};
 pub fn solve_lda<T, const X_WIDTH: usize, const X_HEIGHT: usize>(
     x: SMatrix<f32, X_HEIGHT, X_WIDTH>,
     y: SVector<T, X_HEIGHT>,
-) -> (f32, SVector<f32, X_WIDTH>) where
+) -> (f32, SVector<f32, X_WIDTH>)
+where
     T: Eq + Hash + Debug,
 {
     // calculate the mean of the classes
@@ -62,12 +63,10 @@ pub fn solve_lda<T, const X_WIDTH: usize, const X_HEIGHT: usize>(
     (b, w)
 }
 
-
-
 #[cfg(test)]
 mod tests {
-    use crate::vec2;
     use super::*;
+    use crate::vec2;
 
     #[derive(PartialEq, Eq, Debug, Hash, Clone)]
     enum Logo {
@@ -101,7 +100,7 @@ mod tests {
         .into();
 
         let b = solve_lda(x, y);
-        assert_eq!(b , (-42.2037201, [-0.216408253, 1.36400926].into()));
+        assert_eq!(b, (-42.2037201, [-0.216408253, 1.36400926].into()));
         assert_eq!((b.1.transpose() * vec2(6., 25.))[0] + b.0, -9.401939);
     }
 }
