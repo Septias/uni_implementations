@@ -1,4 +1,4 @@
 pub mod helpers;
 pub mod lda;
-pub mod logres;
+pub mod logreg;
 pub mod nn;

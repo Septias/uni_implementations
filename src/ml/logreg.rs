@@ -2,14 +2,14 @@ use super::helpers::sigmoid;
 use nalgebra::{RowSVector, SMatrix, SVector};
 
 // TODO: make X_WIDTH and X_HEIGHT mirror matrix-syntax mxn
-pub struct LogRes<const X_HEIGHT: usize, const X_WIDTH: usize> {
+pub struct LogReg<const X_HEIGHT: usize, const X_WIDTH: usize> {
     x: SMatrix<f32, X_HEIGHT, X_WIDTH>,
     y: SVector<f32, X_HEIGHT>,
     w: SVector<f32, X_WIDTH>,
     alpha: f32,
 }
 
-impl<const X_WIDTH: usize, const X_HEIGHT: usize> LogRes<X_HEIGHT, X_WIDTH> {
+impl<const X_WIDTH: usize, const X_HEIGHT: usize> LogReg<X_HEIGHT, X_WIDTH> {
     pub fn new(x: SMatrix<f32, X_HEIGHT, X_WIDTH>, y: SVector<f32, X_HEIGHT>, alpha: f32) -> Self {
         Self {
             x,
@@ -56,9 +56,9 @@ mod tests {
         ]);
         let y: SVector<f32, 4> = [1., 1., 0., 0.].into();
 
-        let mut reg_res = LogRes::<4, 3>::new(x, y, 0.5);
-        reg_res.step();
-        let res = reg_res.predict([1.0, -1., 1.].into());
+        let mut log_reg = LogReg::<4, 3>::new(x, y, 0.5);
+        log_reg.step();
+        let res = log_reg.predict([1.0, -1., 1.].into());
         assert_eq!(res, 0.7310586)
     }
 }
