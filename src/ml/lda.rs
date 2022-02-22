@@ -1,6 +1,5 @@
-#![allow(unused)]
 use itertools::Itertools;
-use nalgebra::{Matrix2, RowSVector, SMatrix, SVector, Vector};
+use nalgebra::{RowSVector, SMatrix, SVector};
 use std::{fmt::Debug, hash::Hash};
 
 pub fn solve_lda<T, const X_WIDTH: usize, const X_HEIGHT: usize, const Y_HEIGHT: usize>(
@@ -53,7 +52,7 @@ pub fn solve_lda<T, const X_WIDTH: usize, const X_HEIGHT: usize, const Y_HEIGHT:
 
     // Calculate the Inbetween
     // S_w = (m2 - m1) * (m1 - m2)^T
-    let mut s_w = 0.5 * (sk1 + sk2);
+    let s_w = 0.5 * (sk1 + sk2);
 
     // calculate the w
     // J(w) = \frac{(m2 - m1)^2}{s_1^2 + s_2^2}
@@ -63,19 +62,18 @@ pub fn solve_lda<T, const X_WIDTH: usize, const X_HEIGHT: usize, const Y_HEIGHT:
     (b, w)
 }
 
-#[derive(PartialEq, Eq, Debug, Hash, Clone)]
-enum Logo {
-    NASA,
-    ALDI,
-}
+
 
 #[cfg(test)]
 mod tests {
-    use std::iter::once;
-
     use crate::vec2;
-
     use super::*;
+
+    #[derive(PartialEq, Eq, Debug, Hash, Clone)]
+    enum Logo {
+        NASA,
+        ALDI,
+    }
 
     #[test]
     fn test_lda() {
