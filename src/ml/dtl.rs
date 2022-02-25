@@ -1,5 +1,5 @@
-use itertools::Itertools;
 use super::helpers::squared_error;
+use itertools::Itertools;
 
 /// Decision tree learning
 pub struct TrainingExample {
@@ -18,7 +18,10 @@ fn approx_equal(a: f32, b: f32, dp: u8) -> bool {
 }
 
 impl<'a> Decision<'a> {
-    pub fn new(examples: Vec<&'a TrainingExample>, children: Option<[Box<Decision<'a>>; 2]>) -> Self {
+    pub fn new(
+        examples: Vec<&'a TrainingExample>,
+        children: Option<[Box<Decision<'a>>; 2]>,
+    ) -> Self {
         Self { examples, children }
     }
 
@@ -32,11 +35,13 @@ impl<'a> Decision<'a> {
                     .iter()
                     .partition(|example| example.features < *split)
             })
-            .map(|(left, right): (Vec<&TrainingExample>, Vec<&TrainingExample>)| {
-                let purity_left = compute_purity(&left, get_prediction(&left));
-                let purity_right = compute_purity(&right, get_prediction(&right));
-                (purity_left + purity_right, (left, right))
-            });
+            .map(
+                |(left, right): (Vec<&TrainingExample>, Vec<&TrainingExample>)| {
+                    let purity_left = compute_purity(&left, get_prediction(&left));
+                    let purity_right = compute_purity(&right, get_prediction(&right));
+                    (purity_left + purity_right, (left, right))
+                },
+            );
 
         let best_split = split_scores.min_by(|x, y| x.0.partial_cmp(&y.0).unwrap());
 
@@ -59,9 +64,7 @@ impl<'a> Decision<'a> {
     }
 }
 
-fn log_purity(examples: &[&TrainingExample]) {
-    
-}
+fn log_purity(examples: &[&TrainingExample]) {}
 
 fn compute_purity(examples: &[&TrainingExample], prediction: f32) -> f32 {
     examples

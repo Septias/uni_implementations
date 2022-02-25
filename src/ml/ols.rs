@@ -33,7 +33,7 @@ impl<const X_HEIGHT: usize, const X_WIDTH: usize> OLS<X_HEIGHT, X_WIDTH> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{vec2, vec3, ml::helpers::rmse};
+    use crate::{ml::helpers::rmse, vec2, vec3};
     use itertools::Itertools;
     use nalgebra::Vector3;
 
@@ -89,8 +89,9 @@ mod tests {
 
         let with_bias: SVector<f32, 2> = [
             ols.predict(vec3(1.0, -2., 2.).transpose()),
-            ols.predict(vec3(1.0, -4., 15.).transpose())
-        ].into();
+            ols.predict(vec3(1.0, -4., 15.).transpose()),
+        ]
+        .into();
 
         let x: SMatrix<f32, 3, 2> =
             SMatrix::from_columns(&[[-0.8, 0.3, 1.5].into(), [2.8, -2.2, 1.1].into()]);
@@ -98,17 +99,18 @@ mod tests {
         let mut ols = OLS::new();
         ols.solve(x, y);
 
-        let no_bias: SVector<f32, 2>  = [ 
+        let no_bias: SVector<f32, 2> = [
             ols.predict(vec2(-2., 2.).transpose()),
-            ols.predict(vec2(-4., 15.).transpose())
-        ].into();
+            ols.predict(vec2(-4., 15.).transpose()),
+        ]
+        .into();
 
         let func = |x: f32, y: f32| -> f32 { 5. + 2. * x - 4. * y };
         let ground_truth = vec2(func(-2., 2.), func(-4., 15.));
 
         let rmse = [
             rmse(&with_bias, &ground_truth),
-            rmse(&no_bias, &ground_truth)
+            rmse(&no_bias, &ground_truth),
         ];
         assert_eq!(rmse, [1.46368885, 5.32216644]);
     }
