@@ -14,3 +14,16 @@ pub fn squared_error(x: f32, y: f32) -> f32 {
 pub fn rmse<const SIZE: usize>(x: &SVector<f32, SIZE>, y: &SVector<f32, SIZE>) -> f32 {
     ((x-y).map(|x| x.powf(2.)).sum() / SIZE as f32).sqrt()
 }
+
+
+pub fn relu(x: f32) -> f32 {
+    if x > 0. {
+        x
+    } else {
+        0.
+    }
+}
+
+pub fn linear(x: f32) -> f32 {
+    x
+}
