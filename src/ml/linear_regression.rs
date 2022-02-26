@@ -1,10 +1,10 @@
 use nalgebra::{RowSVector, SMatrix, SVector};
 
-pub struct OLS<const X_HEIGHT: usize, const X_WIDTH: usize> {
+pub struct LinearRegression<const X_HEIGHT: usize, const X_WIDTH: usize> {
     w: SVector<f32, X_WIDTH>,
 }
 
-impl<const X_HEIGHT: usize, const X_WIDTH: usize> OLS<X_HEIGHT, X_WIDTH> {
+impl<const X_HEIGHT: usize, const X_WIDTH: usize> LinearRegression<X_HEIGHT, X_WIDTH> {
     pub fn new() -> Self {
         Self {
             w: SVector::zeros(),
@@ -29,7 +29,6 @@ impl<const X_HEIGHT: usize, const X_WIDTH: usize> OLS<X_HEIGHT, X_WIDTH> {
 }
 
 /// Solve ordinary-least-squares problems
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -38,24 +37,24 @@ mod tests {
     use nalgebra::Vector3;
 
     #[test]
-    fn test_ols() {
+    fn test_lin_reg() {
         let x: SMatrix<f32, 3, 2> =
             SMatrix::from_columns(&[[-0.8, 0.3, 1.5].into(), [2.8, -2.2, 1.1].into()]);
         let y: Vector3<f32> = [-8.5, 12.8, 3.8].into();
 
-        let mut ols = OLS::new();
-        assert_eq!(ols.solve(x, y), vec2(4.19881678, -3.06202126));
+        let mut lin_reg = LinearRegression::new();
+        assert_eq!(lin_reg.solve(x, y), vec2(4.19881678, -3.06202126));
 
         let predictions = x
             .row_iter()
-            .map(|row| ols.predict(row.into_owned()))
+            .map(|row| lin_reg.predict(row.into_owned()))
             .collect_vec();
 
         assert_eq!(predictions, [-11.9327126, 7.99609184, 2.93000197])
     }
 
     #[test]
-    fn test_old_bias() {
+    fn test_lin_reg_bias() {
         let x: SMatrix<f32, 3, 3> = SMatrix::from_columns(&[
             SVector::repeat(1.),
             [-0.8, 0.3, 1.5].into(),
@@ -63,13 +62,13 @@ mod tests {
         ]);
         let y: Vector3<f32> = [-8.5, 12.8, 3.8].into();
 
-        let mut ols = OLS::new();
-        let sol = ols.solve(x, y);
+        let mut lin_reg = LinearRegression::new();
+        let sol = lin_reg.solve(x, y);
         assert_eq!(sol, vec3(3.91121507, 2.62616825, -3.68224335));
 
         let predictions = x
             .row_iter()
-            .map(|row| ols.predict(row.into_owned()))
+            .map(|row| lin_reg.predict(row.into_owned()))
             .collect_vec();
 
         assert_eq!(predictions, [-8.5, 12.8000011, 3.79999971])
@@ -84,24 +83,24 @@ mod tests {
         ]);
         let y: Vector3<f32> = [-8.5, 12.8, 3.8].into();
 
-        let mut ols = OLS::new();
-        ols.solve(x, y);
+        let mut lin_reg = LinearRegression::new();
+        lin_reg.solve(x, y);
 
         let with_bias: SVector<f32, 2> = [
-            ols.predict(vec3(1.0, -2., 2.).transpose()),
-            ols.predict(vec3(1.0, -4., 15.).transpose()),
+            lin_reg.predict(vec3(1.0, -2., 2.).transpose()),
+            lin_reg.predict(vec3(1.0, -4., 15.).transpose()),
         ]
         .into();
 
         let x: SMatrix<f32, 3, 2> =
             SMatrix::from_columns(&[[-0.8, 0.3, 1.5].into(), [2.8, -2.2, 1.1].into()]);
         let y: Vector3<f32> = [-8.5, 12.8, 3.8].into();
-        let mut ols = OLS::new();
-        ols.solve(x, y);
+        let mut lin_reg = LinearRegression::new();
+        lin_reg.solve(x, y);
 
         let no_bias: SVector<f32, 2> = [
-            ols.predict(vec2(-2., 2.).transpose()),
-            ols.predict(vec2(-4., 15.).transpose()),
+            lin_reg.predict(vec2(-2., 2.).transpose()),
+            lin_reg.predict(vec2(-4., 15.).transpose()),
         ]
         .into();
 

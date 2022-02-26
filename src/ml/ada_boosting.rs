@@ -83,7 +83,7 @@ impl<const TRAINING_POINTS: usize> Tree<TRAINING_POINTS> {
 }
 
 fn loss_fn<const T: usize> (y: SVector<f32, T>, y_hat: SVector<f32, T>, w: SVector<f32, T> ) {
-    (y.do * y_hat).map(|elem| E.powf(elem)) ;
+    y.component_mul(&y_hat).map(|elem| E.powf(elem)) ;
 }
 
 #[cfg(test)]

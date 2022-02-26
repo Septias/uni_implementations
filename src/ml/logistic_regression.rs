@@ -31,7 +31,6 @@ impl<const X_WIDTH: usize, const X_HEIGHT: usize> LogReg<X_HEIGHT, X_WIDTH> {
         let propability_vec: SVector<f32, X_HEIGHT> = SVector::from_iterator(propability_iter);
 
         let xt_y_m_p = self.x.transpose() * (self.y - propability_vec);
-
         self.w += self.alpha * xt_y_m_p;
     }
 

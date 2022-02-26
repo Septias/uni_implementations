@@ -1,7 +1,7 @@
 pub mod ada_boosting;
-pub mod dtl;
+pub mod regression_trees;
 pub mod helpers;
-pub mod lda;
-pub mod logreg;
-pub mod nn;
-pub mod ols;
+pub mod linear_classification;
+pub mod logistic_regression;
+pub mod neuronal_networ;
+pub mod linear_regression;
