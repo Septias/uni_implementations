@@ -1,3 +1,4 @@
+pub mod ada_boosting;
 pub mod dtl;
 pub mod helpers;
 pub mod lda;

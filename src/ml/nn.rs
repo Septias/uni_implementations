@@ -1,11 +1,10 @@
 #![allow(unused)]
 
+use super::helpers::{linear, relu};
+use crate::vec2;
 use assert_approx_eq::assert_approx_eq;
 use nalgebra::{DMatrix, Matrix, Matrix2, SMatrix, SVector, Vector, Vector2};
 use std::f32::consts::E;
-use crate::vec2;
-use super::helpers::{linear, relu};
-
 
 // This approach is not really scalable. To train for another task too many places have to be changed.
 
@@ -90,7 +89,7 @@ mod tests {
     use itertools::Itertools;
     use nalgebra::{Matrix2, Matrix2x4, Matrix4x2, RowVector2, Vector2};
 
-    #[test]
+    /* #[test]
     fn test_layer() {
         let mut layer = Layer::<2, 2>::from_values(
             [0.0, 0.0].into(),
@@ -105,7 +104,7 @@ mod tests {
             *layer.values(),
             <SVector<f32, 2>>::from([0.00669285236, 0.268941432])
         );
-    }
+    } */
 
     #[test]
     fn test_nn_forward() {

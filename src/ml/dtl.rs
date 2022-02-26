@@ -1,4 +1,4 @@
-use super::helpers::squared_error;
+use super::helpers::{approx_equal, squared_error};
 use itertools::Itertools;
 
 /// Decision tree learning
@@ -10,11 +10,6 @@ pub struct TrainingExample {
 pub struct Decision<'a> {
     examples: Vec<&'a TrainingExample>,
     children: Option<[Box<Decision<'a>>; 2]>,
-}
-
-fn approx_equal(a: f32, b: f32, dp: u8) -> bool {
-    let p = 10f32.powi(-(dp as i32));
-    (a - b).abs() < p
 }
 
 impl<'a> Decision<'a> {
@@ -63,8 +58,6 @@ impl<'a> Decision<'a> {
             .collect()
     }
 }
-
-fn log_purity(examples: &[&TrainingExample]) {}
 
 fn compute_purity(examples: &[&TrainingExample], prediction: f32) -> f32 {
     examples
