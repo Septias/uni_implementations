@@ -3,10 +3,11 @@
 use assert_approx_eq::assert_approx_eq;
 use nalgebra::{DMatrix, Matrix, Matrix2, SMatrix, SVector, Vector, Vector2};
 use std::f32::consts::E;
-
 use crate::vec2;
-
 use super::helpers::{linear, relu};
+
+
+// This approach is not really scalable. To train for another task too many places have to be changed.
 
 struct Layer<const INPUT: usize, const NODES: usize> {
     values: SVector<f32, NODES>,
@@ -82,28 +83,6 @@ impl Nn1 {
     }
 }
 
-struct Nn2 {
-    layers: (Layer<2, 2>, Layer<2, 2>),
-}
-
-impl Nn2 {
-    fn new() -> Self {
-        let w1 = Matrix2::new(3.21, -2.34, 3.21, -2.34);
-        let w2 = Matrix2::new(3.19, -2.68, 4.64, -3.44);
-        Self {
-            layers: (
-                Layer::from_values(SVector::zeros(), w1, relu, None),
-                Layer::from_values(SVector::zeros(), w2, relu, None),
-            ),
-        }
-    }
-
-    fn forward(&mut self, input: SVector<f32, 2>) -> &SVector<f32, 2> {
-        self.layers.0.forward(&input);
-        self.layers.1.forward(self.layers.0.values());
-        self.layers.1.values()
-    }
-}
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -154,7 +133,5 @@ mod tests {
 
         let t = ((input * w1 + b1).map(|elem| elem.max(0.0)) * w2) + b2;
         println!("{:?}", t);
-
-        let mut nn = Nn2::new();
     }
 }
