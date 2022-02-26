@@ -89,23 +89,6 @@ mod tests {
     use itertools::Itertools;
     use nalgebra::{Matrix2, Matrix2x4, Matrix4x2, RowVector2, Vector2};
 
-    /* #[test]
-    fn test_layer() {
-        let mut layer = Layer::<2, 2>::from_values(
-            [0.0, 0.0].into(),
-            Matrix2::<f32>::new(1., 0., 0., 1.),
-            sigmoid,
-            None,
-        );
-        let input: SVector<f32, 2> = [5., 1.].into();
-
-        layer.forward(&input);
-        assert_eq!(
-            *layer.values(),
-            <SVector<f32, 2>>::from([0.00669285236, 0.268941432])
-        );
-    } */
-
     #[test]
     fn test_nn_forward() {
         let mut nn = Nn1::new();
