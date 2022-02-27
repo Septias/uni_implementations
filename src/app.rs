@@ -11,7 +11,7 @@ fn redraw(canvas: &NodeRef) {
 
 #[function_component(App)]
 pub fn app() -> Html {
-    let reference = use_state(|| NodeRef::default()).deref().clone();
+    let reference = use_state(NodeRef::default).deref().clone();
     let reference_clone = reference.clone();
     let reference_clone2 = reference.clone();
 

@@ -43,14 +43,14 @@ mod tests {
         let y: Vector3<f32> = [-8.5, 12.8, 3.8].into();
 
         let mut lin_reg = LinearRegression::new();
-        assert_eq!(lin_reg.solve(x, y), vec2(4.19881678, -3.06202126));
+        assert_eq!(lin_reg.solve(x, y), vec2(4.198_817, -3.062_021_3));
 
         let predictions = x
             .row_iter()
             .map(|row| lin_reg.predict(row.into_owned()))
             .collect_vec();
 
-        assert_eq!(predictions, [-11.9327126, 7.99609184, 2.93000197])
+        assert_eq!(predictions, [-11.932_713, 7.996_092, 2.930_002])
     }
 
     #[test]
@@ -64,14 +64,14 @@ mod tests {
 
         let mut lin_reg = LinearRegression::new();
         let sol = lin_reg.solve(x, y);
-        assert_eq!(sol, vec3(3.91121507, 2.62616825, -3.68224335));
+        assert_eq!(sol, vec3(3.911_215, 2.626_168_3, -3.682_243_3));
 
         let predictions = x
             .row_iter()
             .map(|row| lin_reg.predict(row.into_owned()))
             .collect_vec();
 
-        assert_eq!(predictions, [-8.5, 12.8000011, 3.79999971])
+        assert_eq!(predictions, [-8.5, 12.800_001, 3.799_999_7])
     }
 
     #[test]
@@ -111,6 +111,6 @@ mod tests {
             rmse(&with_bias, &ground_truth),
             rmse(&no_bias, &ground_truth),
         ];
-        assert_eq!(rmse, [1.46368885, 5.32216644]);
+        assert_eq!(rmse, [1.463_688_9, 5.322_166_4]);
     }
 }
