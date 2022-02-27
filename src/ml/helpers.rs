@@ -1,9 +1,7 @@
-use std::f32::consts::E;
-
 use nalgebra::SVector;
 
 pub fn sigmoid(x: f32) -> f32 {
-    1. / (1. + E.powf(-x))
+    1. / (1. + (-x).exp())
 }
 
 pub fn squared_error(x: f32, y: f32) -> f32 {

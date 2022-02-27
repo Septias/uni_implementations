@@ -15,7 +15,7 @@ pub fn draw(canvas: HtmlCanvasElement) -> DrawResult<()> {
     root.fill(&WHITE)?;
     let mut chart = ChartBuilder::on(&root)
         .margin(20)
-        .caption(format!("Residuals"), font)
+        .caption("Residuals".to_string(), font)
         .x_label_area_size(30)
         .y_label_area_size(30)
         .build_cartesian_2d(0f32..10f32, 0f32..10f32)?;

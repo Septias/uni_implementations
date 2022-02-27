@@ -100,7 +100,7 @@ mod tests {
         .into();
 
         let b = solve_lda(x, y);
-        assert_eq!(b, (-42.2037201, [-0.216408253, 1.36400926].into()));
+        assert_eq!(b, (-42.203_72, [-0.216_408_25, 1.364_009_3].into()));
         assert_eq!((b.1.transpose() * vec2(6., 25.))[0] + b.0, -9.401939);
     }
 }
