@@ -52,7 +52,7 @@ where
     sk2 /= c_2 - 1.;
 
     // Calculate the Inbetween
-    // S_w = (m2 - m1) * (m1 - m2)^T
+    // S_b = 1/2 (S_1 + S_2)
     let s_w = 0.5 * (sk1 + sk2);
 
     // calculate the w

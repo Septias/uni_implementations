@@ -20,18 +20,18 @@ impl<const X_WIDTH: usize, const X_HEIGHT: usize> LogReg<X_HEIGHT, X_WIDTH> {
     }
 
     /// we use the loss-function
-    /// J = - \sum{n=1}N y_n log p_n + (1 - y_n) log (1-p_n)
+    /// J = - \sum{n=1}^N y_n log(p_n) + (1 - y_n) log(1-p_n)
     /// transforms to
-    /// - \sum{n=1}N y_n * x_n * w - log(1 + e^{x_n * w})
+    /// - \sum{n=1}^N y_n * x_n * w - log(1 + e^{x_n * w})
     /// This derived with respect to w is
-    /// -X^T(y - p)
+    /// -X^T(y - p) (stern)
     /// p is this Vector: (p(y = 1 | X = x_1; w),... ,p(y = 1 | X = x_N; w))^T
     pub fn step(&mut self) {
         let propability_iter = self.x.row_iter().map(|row| sigmoid((row * self.w)[0]));
         let propability_vec: SVector<f32, X_HEIGHT> = SVector::from_iterator(propability_iter);
 
-        let xt_y_m_p = self.x.transpose() * (self.y - propability_vec);
-        self.w += self.alpha * xt_y_m_p;
+        let stern = self.x.transpose() * (self.y - propability_vec);
+        self.w += self.alpha * stern;
     }
 
     pub fn predict(&self, x: RowSVector<f32, X_WIDTH>) -> f32 {
