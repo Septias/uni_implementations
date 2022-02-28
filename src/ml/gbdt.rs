@@ -1,7 +1,7 @@
 #![allow(unused)]
 
 use itertools::Itertools;
-use nalgebra::{SMatrix, SVector};
+use nalgebra::{Matrix2x6, SMatrix, SVector};
 
 use super::helpers::{approx_equal, sigmoid};
 
@@ -27,11 +27,11 @@ struct Stump {
 }
 
 impl Stump {
-    fn new(split: Split) -> Self {
+    fn new(split: Split, w1: f32, w2: f32) -> Self {
         Self {
             split,
-            w1: f32::default(),
-            w2: f32::default(),
+            w1,
+            w2,
         }
     }
 
@@ -63,16 +63,25 @@ impl<const TRAINING_POINTS: usize, const FEATURE_SIZE: usize> GBDT<TRAINING_POIN
         g_n: fn(f32, f32) -> f32,
         h_n: fn(f32) -> f32,
     ) -> Self {
-        let splits = training_points
-            .iter()
+        let matrix = SMatrix::<f32, FEATURE_SIZE, TRAINING_POINTS>::from_columns(&training_points)
+            .transpose();
+
+        let splits = matrix
+            .column_iter()
             .enumerate()
             .map(|(index, column)| {
-                column
+                let mut items = column
+                    .iter()
+                    .dedup_by(|a, b| approx_equal(**a, **b, 10))
+                    .collect_vec();
+
+                items.sort_by(|a, b| a.partial_cmp(b).unwrap());
+
+                items
                     .iter()
                     .tuple_windows()
-                    .filter(|(a, b)| !approx_equal(**a, **b, 10))
-                    .map(|(x1, x2)| (x1 + x2) / 2.)
-                    .dedup_by(|a, b| approx_equal(*a, *b, 10))
+                    .filter(|(a, b)| !approx_equal(***a, ***b, 10))
+                    .map(|(x1, x2)| (**x1 + **x2) / 2.)
                     .map(|split_var| Split::new(index, split_var))
                     .collect_vec()
             })
@@ -96,44 +105,68 @@ impl<const TRAINING_POINTS: usize, const FEATURE_SIZE: usize> GBDT<TRAINING_POIN
         let mut prediction = vec![0.; TRAINING_POINTS];
 
         for i in 0..self.depth {
-            
             let prediction = GBDT::predict_samples(&self.stumps, &self.training_points);
-            let gain_comparison = [prediction.to_vec(), self.y.to_vec()];
-            println!("prediction in iteration {} from whole tree: {:?}", i ,prediction);
+            let gain = self.single_gain(&self.y.to_vec(), &prediction.to_vec());
+            println!(
+                "prediction in iteration {} from whole tree: {:?}",
+                i, prediction
+            );
             println!("choosing split from {:?}", self.splits);
 
-            let split =self.splits.iter().map(|split| {
-                let (left, right): (
-                    Vec<(usize, &SVector<f32, FEATURE_SIZE>)>,
-                    Vec<(usize, &SVector<f32, FEATURE_SIZE>)>,
-                ) = self
-                    .training_points
-                    .iter()
-                    .enumerate()
-                    .partition(|(index, tp)| tp[split.variable] > split.value);
-                
-                
-                let (left_y_hat, left_y): (Vec<f32>, Vec<f32>) = left
-                    .iter()
-                    .map(|(index, elem)| (self.y[*index], prediction[*index]))
-                    .unzip();
-                
-                let (right_y, right_y_hat): (Vec<f32>, Vec<f32>) = right
-                    .iter()
-                    .map(|(index, elem)| (self.y[*index],  prediction[*index]))
-                    .unzip();
+            let split = self
+                .splits
+                .iter()
+                .map(|split| {
+                    let (left, right): (
+                        Vec<(usize, &SVector<f32, FEATURE_SIZE>)>,
+                        Vec<(usize, &SVector<f32, FEATURE_SIZE>)>,
+                    ) = self
+                        .training_points
+                        .iter()
+                        .enumerate()
+                        .partition(|(index, tp)| tp[split.variable] > split.value);
 
-                ( (self.gain(&gain_comparison, [left_y_hat, left_y], [right_y_hat, right_y]) * 1000.) as usize, split)
-            }).max_by_key(|elem| elem.0);
+                    let (left_y, left_y_hat): (Vec<f32>, Vec<f32>) = left
+                        .iter()
+                        .map(|(index, elem)| (self.y[*index], prediction[*index]))
+                        .unzip();
 
-            if let Some((score, split)) = split{
+                    let (right_y, right_y_hat): (Vec<f32>, Vec<f32>) = right
+                        .iter()
+                        .map(|(index, elem)| (self.y[*index], prediction[*index]))
+                        .unzip();
+
+                    let left_gain = self.single_gain(&left_y, &left_y_hat);
+                    let right_gain = self.single_gain(&right_y, &right_y_hat);
+                    let score = self.gain(
+                        gain,
+                        left_gain,
+                        right_gain,
+                    );
+                    
+                    // unperformant to compute this event thoug it's only needed for one 
+                    // tree
+                    let w1 = self.best_leaf_value(&left_y, &left_y_hat); 
+                    let w2 = self.best_leaf_value(&right_y, &right_y_hat);
+
+                    // this is a little hacky
+                    ((score * 1000.) as i32, split, w1, w2)
+                    
+                })
+                .inspect(|(score, split, ..)| println!("{:?} has score {}", split, score))
+                .max_by_key(|elem| elem.0);
+
+            if let Some((score, split, w1, w2)) = split {
                 println!("chose best split: {:?}, with score: {}", split, score);
+                let stump = Stump::new(split.clone(), w1, w2);
+                self.stumps.push(stump);
             } else {
                 println!("no more splits possible, quitting");
                 return;
             }
         }
     }
+
 
     fn predict_samples(
         stumps: &Vec<Stump>,
@@ -152,9 +185,8 @@ impl<const TRAINING_POINTS: usize, const FEATURE_SIZE: usize> GBDT<TRAINING_POIN
         prediction
     }
 
-    fn gain(&self, [a, b]: &[Vec<f32>; 2], [c, d]: [Vec<f32>; 2], [e, f]: [Vec<f32>; 2]) -> f32 {
-        1. / 2. * (self.single_gain(a, b) - self.single_gain(&c, &d) - self.single_gain(&e, &f))
-            - self.gamma
+    fn gain(&self, gain: f32, left: f32, right: f32) -> f32 {
+        0.5 * (-gain + left + right) - self.gamma
     }
 
     fn single_gain(&self, y: &Vec<f32>, y_hat: &Vec<f32>) -> f32 {
@@ -163,10 +195,21 @@ impl<const TRAINING_POINTS: usize, const FEATURE_SIZE: usize> GBDT<TRAINING_POIN
             .zip(y_hat)
             .map(|(y, y_hat)| ((self.g_n)(*y, *y_hat)))
             .sum::<f32>()
-            .powf(2.);
+            .powi(2);
 
-        let bottom = (y.iter().map(|y| (self.h_n)(*y)).sum::<f32>() + self.lamda).powi(2);
+        let bottom = (y_hat.iter().map(|y_hat| (self.h_n)(*y_hat)).sum::<f32>() + self.lamda);
         top / bottom
+    }
+
+    fn best_leaf_value(&self, y: &Vec<f32>, y_hat: &Vec<f32>) -> f32 {
+        let top = y
+            .iter()
+            .zip(y_hat)
+            .map(|(y, y_hat)| ((self.g_n)(*y, *y_hat)))
+            .sum::<f32>();
+
+        let bottom = (y_hat.iter().map(|y_hat| (self.h_n)(*y_hat)).sum::<f32>() + self.lamda);
+        -top / bottom
     }
 }
 
@@ -221,12 +264,13 @@ mod tests {
         assert_eq!(
             y.iter()
                 .zip(&y_hat)
+                .inspect(|value| println!("{:?}", value))
                 .map(|(y, y_hat)| g_n(*y, *y_hat))
                 .collect_vec(),
             vec![-0.5, -0.5, -0.5, 0.5, 0.5, 0.5]
         );
 
-        let mut tree = GBDT::new(1, x.into(), y, g_n, h_n);
+        let mut tree = GBDT::new(3, x.into(), y, g_n, h_n);
         tree.train();
     }
 }
