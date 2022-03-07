@@ -3,22 +3,8 @@
 use itertools::Itertools;
 use nalgebra::{Matrix2x6, SMatrix, SVector};
 
-use super::helpers::{approx_equal, sigmoid};
+use super::helpers::{approx_equal, sigmoid, Split};
 
-#[derive(Debug, Clone)]
-struct Split {
-    variable: usize,
-    value: f32,
-}
-
-impl Split {
-    fn new(variables: usize, value: f32) -> Self {
-        Self {
-            variable: variables,
-            value,
-        }
-    }
-}
 
 struct Stump {
     split: Split,
@@ -225,20 +211,7 @@ fn h_n(y_hat: f32) -> f32 {
 #[cfg(test)]
 mod tests {
     use nalgebra::{Matrix6x2, Vector2, Vector6};
-
     use super::*;
-
-    #[test]
-    fn test_gdbt() {
-        let x = Matrix6x2::from_columns(&[
-            [1., 2., 3., 1., 2., 3.].into(),
-            [2., 1., 2., 3., 2., 3.].into(),
-        ]);
-
-        let y: Vector6<f32> = [0., 0., 0., 1., 1., 1.].into();
-
-        //GBDT::new(4, X, g_n, h_n)
-    }
 
     #[test]
     fn test_gdbt_ex() {

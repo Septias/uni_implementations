@@ -1,7 +1,6 @@
 use super::helpers::sigmoid;
 use nalgebra::{RowSVector, SMatrix, SVector};
 
-// TODO: make X_WIDTH and X_HEIGHT mirror matrix-syntax mxn
 pub struct LogReg<const X_HEIGHT: usize, const X_WIDTH: usize> {
     x: SMatrix<f32, X_HEIGHT, X_WIDTH>,
     y: SVector<f32, X_HEIGHT>,

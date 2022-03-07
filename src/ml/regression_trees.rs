@@ -49,10 +49,16 @@ impl<'a> Decision<'a> {
     }
 
     fn generate_split(&self) -> Vec<f32> {
-        self.examples
+        let mut examples = self.examples
             .iter()
             .map(|x| x.features)
-            .dedup_by(|a, b| approx_equal(*a, *b, 100))
+            .dedup_by(|a, b| approx_equal(*a, *b, 10))
+            .collect_vec();
+
+        examples.sort_by(|a, b| a.partial_cmp(&b).unwrap());
+        
+        examples
+            .iter()
             .tuple_windows()
             .map(|(a, b)| (a + b) / 2.)
             .collect()
