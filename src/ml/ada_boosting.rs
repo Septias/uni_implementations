@@ -41,23 +41,25 @@ pub struct Tree<const TRAINING_POINTS: usize> {
 
 impl<const TRAINING_POINTS: usize> Tree<TRAINING_POINTS> {
     pub fn new(depth: usize, training_points: [TrainingExample; TRAINING_POINTS]) -> Self {
-        let t: SMatrix<f32, TRAINING_POINTS, 3> = SMatrix::from_rows(
-            &training_points
-                .iter()
-                .map(|tp| tp.position.transpose())
-                .collect_vec(),
-        );
 
-        let splits = t
+        let iterator = training_points.iter().map(|tp | tp.position).collect_vec();
+        let matrix = SMatrix::<f32, 3, TRAINING_POINTS>::from_columns(&iterator).transpose();
+            
+        let splits = matrix
             .column_iter()
             .map(|column| {
-                column
+                let mut items = column
+                    .iter()
+                    .dedup_by(|a, b| approx_equal(**a, **b, 10))
+                    .collect_vec();
+
+                items.sort_by(|a, b| a.partial_cmp(b).unwrap());
+
+                items
                     .iter()
                     .tuple_windows()
-                    .inspect(|elem| println! {"{:?}", elem})
-                    .filter(|(a, b)| !approx_equal(**a, **b, 10))
-                    .map(|(x1, x2)| (x1 + x2) / 2.)
-                    .dedup_by(|a, b| approx_equal(*a, *b, 10))
+                    .filter(|(a, b)| !approx_equal(***a, ***b, 10))
+                    .map(|(x1, x2)| (**x1 + **x2) / 2.)
                     .collect_vec()
             })
             .collect_vec();

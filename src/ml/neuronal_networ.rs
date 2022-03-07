@@ -7,7 +7,6 @@ use nalgebra::{DMatrix, Matrix, Matrix2, SMatrix, SVector, Vector, Vector2};
 use std::f32::consts::E;
 
 // This approach is not really scalable. To train for another task too many places have to be changed.
-
 struct Layer<const INPUT: usize, const NODES: usize> {
     values: SVector<f32, NODES>,
     weights: SMatrix<f32, NODES, INPUT>,
