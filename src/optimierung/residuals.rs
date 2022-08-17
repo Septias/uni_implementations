@@ -2,11 +2,8 @@
 
 use crate::DrawResult;
 use nalgebra::{Vector2, Vector3};
-use plotters::prelude::*;
-use plotters_canvas::CanvasBackend;
-use web_sys::HtmlCanvasElement;
 
-/// Draw power function f(x) = x^power.
+/* /// Draw power function f(x) = x^power.
 pub fn draw(canvas: HtmlCanvasElement) -> DrawResult<()> {
     let backend = CanvasBackend::with_canvas_object(canvas).unwrap();
     let root = backend.into_drawing_area();
@@ -32,7 +29,7 @@ pub fn draw(canvas: HtmlCanvasElement) -> DrawResult<()> {
     root.present()?;
     Ok(())
 }
-
+ */
 fn vec2(x: f32, y: f32) -> Vector2<f32> {
     [x, y].into()
 }

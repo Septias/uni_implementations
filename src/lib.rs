@@ -1,5 +1,6 @@
 use nalgebra::{Vector2, Vector3};
 
+pub mod graphtheory;
 pub mod ml;
 pub mod optimierung;
 

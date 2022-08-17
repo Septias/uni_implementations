@@ -5,11 +5,6 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-yew = "0.19"
-plotters = "*"
-web-sys = { version = "*", features = ["HtmlCanvasElement"] }
-plotters-canvas = "^0.3.*"
 nalgebra = {version="*", features = ["rand"]}
-rand = {version="*"}
 assert_approx_eq = "1.1.0"
 itertools = "*"

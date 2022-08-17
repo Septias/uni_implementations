@@ -1,8 +1,8 @@
 use std::f32::consts::E;
 
-use itertools::Itertools;
-use nalgebra::{SVector, RowSVector, SMatrix};
 use super::helpers::approx_equal;
+use itertools::Itertools;
+use nalgebra::{RowSVector, SMatrix, SVector};
 
 // TODO: Splits in both directions
 #[derive(Default)]
@@ -96,16 +96,17 @@ impl<const TRAINING_POINTS: usize, const FEATURE_SIZE: usize> Tree<TRAINING_POIN
 
                 items.sort_by(|a, b| a.partial_cmp(b).unwrap());
 
-                items
-                    .iter()
-                    .tuple_windows()
-                    .filter(|(a, b)| !approx_equal(**a, **b, 10))
-                    .map(|(x1, x2)| (x1 + x2) / 2.)
-                    .dedup_by(|a, b| approx_equal(*a, *b, 10))
-                    .collect_vec()
+                /* items
+                .iter()
+                .tuple_windows()
+                .filter(|(a, b)| !approx_equal(**a, **b, 10))
+                .map(|(x1, x2)| (x1 + x2) / 2.)
+                .dedup_by(|a, b| approx_equal(*a, *b, 10))
+                .collect_vec() */
+                todo!()
             })
             .collect_vec();
-        
+
         Self {
             stumps: vec![],
             depth,
@@ -115,12 +116,11 @@ impl<const TRAINING_POINTS: usize, const FEATURE_SIZE: usize> Tree<TRAINING_POIN
     }
 
     pub fn train(&mut self) {
-        let mut w: SVector<f32, TRAINING_POINTS> = SVector::repeat( 1. / TRAINING_POINTS as f32);
+        let mut w: SVector<f32, TRAINING_POINTS> = SVector::repeat(1. / TRAINING_POINTS as f32);
 
-        let y: SVector<f32, TRAINING_POINTS> = SMatrix::from_iterator(
-            self.training_points.iter().map(|tp| tp.classification),
-        );
-        
+        let y: SVector<f32, TRAINING_POINTS> =
+            SMatrix::from_iterator(self.training_points.iter().map(|tp| tp.classification));
+
         for _i in 0..self.depth {
             // 1. Find best split
             let mut best = (f32::MAX, Stump::default());
@@ -132,7 +132,7 @@ impl<const TRAINING_POINTS: usize, const FEATURE_SIZE: usize> Tree<TRAINING_POIN
                             .iter()
                             .map(|tp| decision_stump.predict(&tp.position)),
                     );
-                    
+
                     let value = loss_fn(y, y_hat, w);
 
                     if value < best.0 {
@@ -193,7 +193,6 @@ fn loss_fn<const T: usize>(y: SVector<f32, T>, y_hat: SVector<f32, T>, w: SVecto
 mod tests {
     use super::*;
     use crate::vec3;
-    
 
     #[test]
     fn test_tree_constructor() {
@@ -219,11 +218,11 @@ mod tests {
 
         let mut tree = Tree::new(5, training_points);
         tree.train();
-        
 
-        let prediction = vec![[1., -1., -1.], [-1., -1., -1.], [1., -1., 1.]].iter().map(|tp|{
-            tree.predict((*tp).into())
-        }).collect_vec();
+        let prediction = vec![[1., -1., -1.], [-1., -1., -1.], [1., -1., 1.]]
+            .iter()
+            .map(|tp| tree.predict((*tp).into()))
+            .collect_vec();
 
         println!("{:?}", prediction);
     }
